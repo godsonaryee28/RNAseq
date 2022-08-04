@@ -46,7 +46,8 @@ plot2 <- FeatureScatter(gse.object, feature1 = "nCount_RNA", feature2 = "nFeatur
 plot3 <- FeatureScatter(gse.object, feature1 =  "nCount_RNA", feature2 = "percent.rb")
 plot4 <- FeatureScatter(gse.object, feature1 =  "nCount_RNA", feature2 = "GenesPerUMI")
 plot1 + plot2 +plot3+ plot4
-## Normalizing the data ##
+
+# Normalizing the data #
 #using scaling normalization method “LogNormalize” 
 gse.object <- NormalizeData(gse.object, normalization.method = "LogNormalize", scale.factor = 10000)
 gse.object <- FindVariableFeatures(gse.object, selection.method = "vst", nfeatures = 2000)
@@ -56,6 +57,7 @@ top10 <- head(VariableFeatures(gse.object), 10)
 top20<-head(VariableFeatures(gse.object), 20)
 #Identify the 10 least variable genes
 down10<-tail(VariableFeatures(gse.object),10)
+
 # plot variable features with and without labels
 plot5 <- VariableFeaturePlot(gse.object)
 plot6 <- LabelPoints(plot = plot5, points = top10, repel = TRUE, xnudge = 0, ynudge = 0)
@@ -64,7 +66,8 @@ plot8 <- LabelPoints(plot = plot5, points = down10, repel = TRUE, xnudge = 0, yn
 plot5 + plot7
 plot5 +plot8
 plot5 + plot6 +plot7+ plot8
-##Scaling the data: either using SCTransform() or ScaleData()
+
+#Scaling the data: either using SCTransform() or ScaleData()
 #The ScaleData() function:Shifts the expression of each gene, so that the mean expression across cells is 0
 all.genes <- rownames(gse.object)
 gse.object<- ScaleData(gse.object, features = all.genes)
@@ -95,21 +98,21 @@ DimPlot(gse.object, reduction = "umap")
 #Saveout the output
 saveRDS(gse.object, file = "/Volumes/GoogleDrive/My Drive/GSE70630.rds")
 
-#### Finding differentialy expressed features (cluster biomarkers) ####
+# Finding differentialy expressed features (cluster biomarkers) #
 # find all markers of cluster 2
 cluster2.markers <- FindMarkers(gse.object, ident.1 = 2, min.pct = 0.25)
 head(cluster2.markers, n = 10)
+
 # find all markers distinguishing cluster 1 from clusters 3 and 5
 cluster1.markers <- FindMarkers(gse.object, ident.1 = 1, ident.2 = c(3, 5), min.pct = 0.25)
 # find all markers distinguishing cluster 5 from clusters 0 and 3
 cluster5.markers <- FindMarkers(gse.object, ident.1 = 5, ident.2 = c(0, 3), min.pct = 0.25)
-head(cluster51.markers, n = 10)
-head(cluster5.markers, n = 10)
 # find markers for every cluster compared to all remaining cells, report only the positive ones
 gse.object.markers <- FindAllMarkers(gse.object, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 gse.object.markers %>%
   group_by(cluster) %>%
   slice_max(n = 2, order_by = avg_log2FC)
+
 #Seurat has several tests for differential expression which can be set with the test.use parameter  
 cluster0.markers <- FindMarkers(gse.object, ident.1 = 0, logfc.threshold = 0.25, test.use = "roc", only.pos = TRUE)
 print (cluster0.markers)
@@ -120,11 +123,13 @@ RidgePlot(gse.object, features = c("FOS", "CCL3"))
 VlnPlot(gse.object, features = c("FOS", "CCL3"), slot = "counts", log = TRUE)
 #Featureplots of the top10 genes
 FeaturePlot(gse.object, features = c("FOS","CCL3","CCL4","RGS1", "CCL3L1","CCL4L1","CCL4L2","CD74","SPP1","CCL3L3"))
+
 #DoHeatmap() generates an expression heatmap for given cells and features. 
 gse.object.markers %>%
   group_by(cluster) %>%
   top_n(n = 10, wt = avg_log2FC) -> top10
 DoHeatmap(gse.object, features = top10$gene) + NoLegend()
+
 #Saveout the output
 saveRDS(gse.object, file = "/Volumes/GoogleDrive/My Drive/GSE70630final.rds")
 
