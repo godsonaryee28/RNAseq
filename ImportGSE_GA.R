@@ -1,7 +1,5 @@
-#### To start go to session -> set working directory -> to source file location #####
+## To start go to session -> set working directory -> to source file location ##
 #Set working directory#
-
-#### Major code provided by https://satijalab.org/seurat/ ##### Seurat V3 ####
 #### Pre-processing workflow modifications created for specific data (MGH36, MGH53 and MGH54 tumors) ####
 #Load required libraries
 library(dplyr)
@@ -14,7 +12,7 @@ GSE <- read.table(file = 'GSE70630.txt',
                   as.is = TRUE, 
                   header = TRUE
 )
-#### Using his a a standard pre-processing workflow ####
+## Using his a a standard pre-processing workflow ##
 # Extract MGH36, MGH53 and MGH54 tumors
 coln = colnames(GSE)
 MGH36_vals = coln[grepl( "MGH36" , coln )]
